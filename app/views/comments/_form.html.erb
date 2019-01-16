@@ -1,0 +1,6 @@
+<%= form_for ([@commentable, @commentable.comments.build]) do |f| %>
+    <div class="form-group">
+        <%= f.text_area :description, class: "form-control", placeholder: "Agrega un comentario" %>
+    </div>
+    <%= f.button "Comentar", class: "btn btn-primary" %>
+<% end %>
