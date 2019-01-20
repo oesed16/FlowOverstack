@@ -18,11 +18,10 @@ class QuestionsController < ApplicationController
   def show
     @question = Question.find(params[:id])
     @answers = @question.answers
-    @answer = Answer.find(params[:id])
-    if @commentable = @question
-        @comments = @question.comments
-    elsif @commentable = @answer
-        @comments = @answer.comments
+    if params[:question_id].present?
+      @comments = @question.comments
+    elsif params[:answer_id].present?
+      @comments = @answers.comments
     end
   end
 

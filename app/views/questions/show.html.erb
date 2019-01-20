@@ -9,13 +9,31 @@
                     <%= markdown(@question.description) %>
                 </div>
             </div> <!-- /.blog-post -->
-
-            <% if @question.comments.exists? %>
-                <%= render "comments/comments", locals: { commentable: @question } %>  
-            <% end %>
+            <div class="row justify-content-end">
+                <div class="col-11">
+                    <% if @question.comments.exists? %>
+                        <% @question.comments.each do |comment| %>
+                            <ul class="list-group">
+                                <li class="list-group-item list-group-item-secondary">
+                                    <%= comment.user.email %> comentó hace <%= distance_of_time_in_words( Time.now, comment.created_at) %> 
+                                </li>
+                                <li class="list-group-item">
+                                    <%= comment.description %> </br>
+                                </li>
+                            </ul>
+                            </br>
+                        <% end %> 
+                    <% end %>
+                </div>
+            </div>
 
             <% if user_signed_in? %>
-                <%= render "comments/form", locals: { commentable: @question } %>
+                <%= form_for ([@question, Comment.new]) do |f| %>
+                    <div class="form-group">
+                        <%= f.text_area :description, class: "form-control", placeholder: "Agrega un comentario" %>
+                    </div>
+                    <%= f.button "Comentar", class: "btn btn-primary" %>
+                <% end %>
             <% end %>
             </br>
             <h4><%= @answers.count %> Respuesta(s)</h4><hr>
@@ -29,21 +47,37 @@
                         <li class="list-group-item">
                             <%= markdown(answer.description) %> </br>
                         </li>
+                        </br>
+                        <div class="row justify-content-end">
+                            <div class="col-11">
+                                <% if answer.comments.exists? %>
+                                    <% answer.comments.each do |comment| %>
+                                        <ul class="list-group">
+                                            <li class="list-group-item list-group-item-secondary">
+                                                <%= comment.user.email %> comentó hace <%= distance_of_time_in_words( Time.now, comment.created_at) %> 
+                                            </li>
+                                            <li class="list-group-item">
+                                                <%= comment.description %> </br>
+                                            </li>
+                                        </ul>
+                                        </br>
+                                    <% end %>
+                                <% end %>
+                                <% if user_signed_in? %>
+                                    </br>
+                                    <%= form_for ([answer, Comment.new]) do |f| %>
+                                        <div class="form-group">
+                                            <%= f.text_area :description, class: "form-control", placeholder: "Agrega un comentario" %>
+                                        </div>
+                                        <%= f.button "Comentar", class: "btn btn-primary" %>
+                                    <% end %>
+                                <% end %>
+                            </div>
+                        </div>
                     </ul>
                     </br>
                 <% end %>
             <% end %>
-
-            <% if @answer.comments.exists? %>
-                    <%= render "comments/comments", locals: { commentable: @answer } %>
-            <% end %>
-
-            <% if user_signed_in? %>
-                <% @answers.each do |answer| %>
-                    <%= render "comments/form", locals: { commentable: @answer } %> </br>
-                <% end %>
-            <% end %>
-
             <% if user_signed_in? %>
                 <h4>Tu Respuesta</h4>
                 <%= form_for ([@question, @question.answers.build]) do |f| %>
@@ -56,7 +90,6 @@
                     </div>
                 <% end %>
             <% end %>
-
         </div>
     </div>
 </div>
