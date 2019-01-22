@@ -23,6 +23,7 @@
                 <% if user_signed_in? && question.user === current_user %>
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     <%= link_to "Editar", edit_question_path(question.id) %>
+                     &nbsp;
                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                     <%= link_to "Eliminar", question_path(question.id), method: :delete, data: { confirm: "¿Está seguro que desea eliminar ésta pregunta?" } %>
                 <% end %>
