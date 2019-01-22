@@ -1,12 +1,32 @@
 <%= render "layouts/navbar" %>
+<%= render "layouts/alerts" %> 
 </br>
 <div class="container">
+    <%= link_to "Volver", root_path, class: "btn btn-outline-primary"%>
     <div class="row justify-content-center">
         <div class="col-8">
             <div class="blog-post">
                 <h2 class="blog-post-title"><%= @question.title %></h2>
-                <div class="cuerpo-index">
-                    <%= markdown(@question.description) %>
+                </br>
+                <div class="row">
+                    <div class="col-1">
+                        <% if @question.voted_question_by? current_user %>
+                            <%= link_to question_vote_path(@question), method: :delete, class: "product-upvote upvote-active" do %>
+                                <span class="upvote-arrow"></span>
+                                <span class="upvote-count"><%= @question.votes.count %></span>
+                            <% end %>
+                        <% else %>
+                            <%= link_to question_vote_path(@question), method: :post, class: "product-upvote" do %>
+                                <span class="upvote-arrow"></span>
+                                <span class="upvote-count"><%= @question.votes.count %></span>
+                            <% end %>
+                        <% end %>
+                    </div>
+                    <div class="col-11">
+                        <div class="cuerpo-index">
+                            <%= markdown(@question.description) %>
+                        </div>
+                    </div>
                 </div>
             </div> <!-- /.blog-post -->
             <div class="row justify-content-end">
@@ -26,30 +46,53 @@
                     <% end %>
                 </div>
             </div>
-
-            <% if user_signed_in? %>
-                <%= form_for ([@question, Comment.new]) do |f| %>
-                    <div class="form-group">
-                        <%= f.text_area :description, class: "form-control", placeholder: "Agrega un comentario" %>
-                    </div>
-                    <%= f.button "Comentar", class: "btn btn-primary" %>
-                <% end %>
-            <% end %>
+            <div class="row justify-content-end">
+                <div class="col-11">
+                    <% if user_signed_in? %>
+                        <%= form_for ([@question, Comment.new]) do |f| %>
+                            <div class="form-group">
+                                <%= f.text_area :description, class: "form-control", placeholder: "Agrega un comentario a ésta pregunta" %>
+                            </div>
+                            <div class="container">
+                                <div class="row justify-content-end">
+                                    <%= f.button "Comentar", class: "btn btn-primary" %>
+                                </div>
+                            </div>
+                        <% end %>
+                    <% end %>
+                </div>
+            </div>
             </br>
-            <h4><%= @answers.count %> Respuesta(s)</h4><hr>
+            <h4><%= @answers.count %> Respuesta(s)</h4><hr/>
+            <% if @answers.count === 0 %>
+                <p> Si conoces a alguien que pueda responder ésta pregunta no dudes en decirle que lo necesitamos ! </p>
+            <% end %>
             &nbsp;
-            <% if @question.answers.exists? %>
-                <% @answers.each do |answer| %>
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-secondary">
-                            <%= answer.user.email %> respondió hace <%= distance_of_time_in_words( Time.now, answer.created_at) %> 
-                        </li>
-                        <li class="list-group-item">
-                            <%= markdown(answer.description) %> </br>
-                        </li>
-                        </br>
-                        <div class="row justify-content-end">
-                            <div class="col-11">
+            <div class="row">
+                <% if @question.answers.exists? %>
+                    <% @answers.each do |answer| %>
+                        <div class="col-1">
+                            <% if answer.voted_answer_by? current_user %>
+                                <%= link_to answer_vote_path(answer), method: :delete, class: "product-upvote upvote-active" do %>
+                                    <span class="upvote-arrow"></span>
+                                    <span class="upvote-count"><%= answer.votes.count %></span>
+                                <% end %>
+                            <% else %>
+                                <%= link_to answer_vote_path(answer), method: :post, class: "product-upvote" do %>
+                                    <span class="upvote-arrow"></span>
+                                    <span class="upvote-count"><%= answer.votes.count %></span>
+                                <% end %>
+                            <% end %>
+                        </div>
+                        <div class="col-11">
+                            <ul class="list-group">
+                                <li class="list-group-item list-group-item-secondary">
+                                    <%= answer.user.email %> respondió hace <%= distance_of_time_in_words( Time.now, answer.created_at) %> 
+                                </li>
+                                <li class="list-group-item">
+                                    <%= markdown(answer.description) %> </br>
+                                </li>
+                                </br>
                                 <% if answer.comments.exists? %>
                                     <% answer.comments.each do |comment| %>
                                         <ul class="list-group">
@@ -64,29 +107,36 @@
                                     <% end %>
                                 <% end %>
                                 <% if user_signed_in? %>
-                                    </br>
                                     <%= form_for ([answer, Comment.new]) do |f| %>
                                         <div class="form-group">
-                                            <%= f.text_area :description, class: "form-control", placeholder: "Agrega un comentario" %>
+                                            <%= f.text_area :description, class: "form-control", placeholder: "Agrega un comentario a ésta respuesta" %>
                                         </div>
-                                        <%= f.button "Comentar", class: "btn btn-primary" %>
+                                        <div class="container">
+                                            <div class="row justify-content-end">
+                                                <%= f.button "Comentar", class: "btn btn-primary" %>
+                                            </div>
+                                        </div>
                                     <% end %>
+                                    </br>
+                                    </br>
                                 <% end %>
-                            </div>
+                            </ul>
                         </div>
-                    </ul>
-                    </br>
+                        </br>
+                    <% end %>
                 <% end %>
-            <% end %>
+            </div>
             <% if user_signed_in? %>
                 <h4>Tu Respuesta</h4>
                 <%= form_for ([@question, @question.answers.build]) do |f| %>
                     <div class="form-group">
-                            <%= f.text_area :description, class: "form-control" %>
+                        <%= f.text_area :description, class: "form-control", :data => {:provide => "markdown"}, placeholder: "Agrega una respuesta a ésta pregunta", rows: "5" %>
                         </br>
-                        <p>
-                            <%= f.button "Enviar respuesta", class: "btn btn-primary" %>
-                        </p>
+                        <div class="container">
+                            <div class="row justify-content-end">
+                                <%= f.button "Enviar respuesta", class: "btn btn-primary" %>
+                            </div>
+                        </div>
                     </div>
                 <% end %>
             <% end %>

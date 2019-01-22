@@ -2,7 +2,10 @@ class QuestionsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
   
   def index
-    @questions = Question.all.order(created_at: :desc)
+    @questions = Question.includes(:answers, :votes).order(created_at: :desc)
+    if params[:s].present?
+      @questions = @questions.where("title LIKE (?) OR description LIKE (?)", "%#{params[:s]}%", "%#{params[:s]}%")
+    end
   end
 
   def new
@@ -10,9 +13,14 @@ class QuestionsController < ApplicationController
   end
 
   def edit
+    @question = Question.find(params[:id])
   end
 
   def destroy
+    question = Question.find(params[:id])
+    question.destroy
+    flash[:notice] = "La pregunta fue eliminada exitosamente"
+    redirect_to root_path
   end
 
   def show
@@ -40,11 +48,20 @@ class QuestionsController < ApplicationController
   end
 
   def update
+    @question = Question.find(params[:id])
+
+    if @question.update(question_params)
+      flash[:notice] = "La pregunta fue modificada exitosamente"
+      redirect_to root_path
+    else
+      flash[:alert] = "La actualización de la pregunta falló, intenta nuevamente"
+      render :edit
+    end
   end
 
   private
 
   def question_params
-    params.require(:question).permit(:user_id, :title, :description)
+    params.require(:question).permit(:user_id, :title, :description, :s)
   end
 end

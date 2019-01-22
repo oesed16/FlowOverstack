@@ -6,23 +6,28 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-md-auto">
-      <% if user_signed_in? %>
-        <li class="nav-item">
-          <%= link_to "Salir", destroy_user_session_path, method: :delete, class: "nav-link" %>
-        </li>
-      <% else %>
-        <li class="nav-item">
-            <%= link_to "Ingresar", new_user_session_path, class: "nav-link" %>
-        </li>
-        <li class="nav-item">
-            <%= link_to "Registrarse", new_user_registration_path, class: "nav-link" %>
-        </li>
-      <% end %>
+      <div class="row align-items-center">
+        <% if user_signed_in? %>
+          <li class="nav-item color-vot-ans-pub">
+            <%= current_user.email %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Salir", destroy_user_session_path, method: :delete, class: "nav-link" %>
+          </li>
+        <% else %>
+          <li class="nav-item">
+              <%= link_to "Ingresar", new_user_session_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+              <%= link_to "Registrarse", new_user_registration_path, class: "nav-link" %>
+          </li>
+        <% end %>
+      </div>
       </ul>
-      &nbsp; &nbsp;
-    <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-    </form>
+      &nbsp; &nbsp; &nbsp; &nbsp;
+      <%= form_tag(root_path, method: :get) do %>
+        <%= text_field_tag :s, params[:s], class: "form-control", placeholder: "Search" %>
+      <% end %>
     </div>
   </nav>
 </div>

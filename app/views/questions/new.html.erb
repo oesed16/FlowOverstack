@@ -19,7 +19,7 @@
                     <%= f.text_field :title, class: "form-control", placeholder: "Título"  %>
                 </div>
                 <div class="form-group">
-                    <%= f.text_area :description, class: "form-control", cols: "30", rows: "10", placeholder: "Descripción" %>
+                    <%= f.text_area :description, class: "form-control", cols: "30", rows: "10", placeholder: "Descripción", :data => {:provide => "markdown"} %>
                 </div>
                 <div>
                     <%= f.button "¡Preguntar!", class: "btn btn-primary"%>

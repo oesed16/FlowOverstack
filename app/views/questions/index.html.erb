@@ -1,19 +1,32 @@
 <%= render "layouts/navbar" %>
-
-<h1>Preguntas</h1>
-
-<%= link_to "Hacer una Pregunta", new_question_path, class: "btn btn-primary" %>
-
+</br>
 <div class="container">
+    <h1>Preguntas</h1>
+    <div class="row justify-content-end">
+        <%= link_to "Hacer una Pregunta", new_question_path, class: "btn btn-primary" %>
+    </div>
     <div class="row justify-content-center">
-        <div class="col-8">
-            <% @questions.each do |question| %>
-                <div class="blog-post">
-                    <h2 class="blog-post-title"><%= link_to question.title, question_path(question.id) %></h2>
-                    <p class="datos-publicacion"> Preguntó <%= question.user.email %> hace <%= distance_of_time_in_words( Time.now, question.created_at) %> </p>
-                </div>
-                </br>
-            <% end %>
-        </div>
+        <% @questions.each do |question| %>
+            <div class="col-1 position-text"><hr/>
+                <%= question.votes.count %></br> 
+                <p class="color-vot-ans-pub">Votos</p>  
+            </div>
+            <div class="col-2 position-text"><hr/>
+                <%= question.answers.count %></br> 
+                <p class="color-vot-ans-pub">Respuestas</p>
+            </div>
+            <div class="col-7"><hr/>
+                <h5><%= link_to question.title, question_path(question.id) %></h5>
+                <p class="color-vot-ans-pub"> Preguntó <%= question.user.email %> hace <%= distance_of_time_in_words( Time.now, question.created_at) %> </p>
+            </div>
+            <div class="col-2"><hr/>
+                <% if user_signed_in? && question.user === current_user %>
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    <%= link_to "Editar", edit_question_path(question.id) %>
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    <%= link_to "Eliminar", question_path(question.id), method: :delete, data: { confirm: "¿Está seguro que desea eliminar ésta pregunta?" } %>
+                <% end %>
+            </div>
+        <% end %>
     </div>
 </div>

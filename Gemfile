@@ -37,6 +37,9 @@ gem 'devise'
 # RedCarpet
 gem 'redcarpet'
 
+# Font-Awesome
+gem "font-awesome-rails"
+
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
 
